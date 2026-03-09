@@ -42,6 +42,19 @@ begin
 select RAISE(ABORT, 'du kan ikke endre brukerID eller gruppetimeID i booking');
 end;
 
+create trigger bruker_utestengt
+before insert on Booking
+for each row
+when (
+	new.brukerID in (
+		select brukerID
+		from Utestengt
+	)
+)
+begin
+select RAISE(ABORT, 'brukeren er utestengt');
+end;
+
 create trigger bruker_opptatt
 before insert on Booking
 for each row
@@ -76,7 +89,7 @@ when (
 )
 begin
 insert into prikk(brukerID, grunn)
-select new.brukerID, 'sen avmelding';
+values (new.brukerID, 'sen avmelding');
 end;
 
 create trigger ulovlige_endringer_oppmøte
@@ -104,7 +117,7 @@ when (
 )
 begin
 insert into prikk(brukerID, grunn)
-select new.brukerID, 'sen avmelding';
+values (new.brukerID, 'sen avmelding');
 end;
 
 create trigger ingen_oppdatering_deltatt
@@ -126,5 +139,5 @@ when (
 )
 begin
 insert into prikk(brukerID, grunn)
-select new.brukerID, 'sent oppmøte';
+values (new.brukerID, 'sent oppmøte');
 end;
