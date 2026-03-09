@@ -171,6 +171,34 @@ create table Booking (
 	foreign key (brukerID) references Bruker(id)
 );
 
+create trigger ingen_pk_endring_booking
+before update of gruppetimeID, brukerID on Booking
+for each row
+begin
+select RAISE(ABORT, 'du kan ikke endre brukerID eller gruppetimeID i booking');
+end;
+
+create trigger bruker_opptatt
+before insert on Booking
+for each row
+when (
+	exists (
+		select 1
+		from Booking b
+		join Gruppetime g1 on b.gruppetimeID = g1.id
+		join Gruppetime g2 on new.gruppetimeID = g2.id
+		join Aktivitet a1 on g1.aktivitet_navn = a1.navn
+		join Aktivitet a2 on g2.aktivitet_navn = a2.navn
+		where b.brukerID = new.brukerID
+		and b.avmeldt_tidspunkt is null
+		and g2.tidspunkt < datetime(g1.tidspunkt, '+' || a1.lengde_min || ' minutes')
+		and g1.tidspunkt < datetime(g2.tidspunkt, '+' || a2.lengde_min || ' minutes')
+	)
+)
+begin
+select RAISE(ABORT, 'brukeren er opptatt da');
+end;
+
 create trigger sen_avmelding_insert
 after insert on Booking
 for each row
