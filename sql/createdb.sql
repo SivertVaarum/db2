@@ -134,6 +134,38 @@ create table Booking (
 	foreign key (brukerID) references Bruker(id)
 );
 
+create trigger sen_avmelding_insert
+after insert on Booking
+for each row
+when (
+	new.avmeldt_tidspunkt > (
+	select datetime(tidspunkt, '-1 hour') 
+	from Gruppetime 
+	where id = new.gruppetimeID 
+	)
+)
+begin
+insert into prikk(brukerID, grunn)
+select new.brukerID, 'sen avmelding';
+end;
+
+create trigger sen_avmelding_update
+after update on Booking
+for each row
+when (
+	old.avmeldt_tidspunkt is null
+	and
+	new.avmeldt_tidspunkt > (
+	select datetime(tidspunkt, '-1 hour') 
+	from Gruppetime 
+	where id = new.gruppetimeID 
+	)
+)
+begin
+insert into prikk(brukerID, grunn)
+select new.brukerID, 'sen avmelding';
+end;
+
 create table Deltatt (
 	gruppetimeID int, 
 	brukerID int,
@@ -144,6 +176,7 @@ create table Deltatt (
 	unique(brukerID, oppmøtt_tidspunkt)
 );
 
+-- DOES NOT COVER UPDATES
 create trigger sent_oppmøte
 after insert on Deltatt
 for each row
