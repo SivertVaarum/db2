@@ -1,3 +1,5 @@
+-- Gruppetime
+
 create trigger gyldig_instruktør_update
 before update on Gruppetime
 for each row
@@ -34,6 +36,48 @@ when (
 begin
 select RAISE(ABORT, 'instruktøren er opptatt');
 end;
+
+-- Reservasjon
+create trigger reservasjon_kollisjon
+before update on Reservasjon
+for each row
+when (
+	exists (
+		select 1
+		from Reservasjon r
+		where new.starttidspunkt < r.sluttidspunkt
+		and r.starttidspunkt < new.sluttidspunkt
+		and r.senter_navn = new.senter_navn
+		and r.sal_navn = new.sal_navn
+		and not ( -- samme rad
+			r.starttidspunkt == old.starttidspunkt 
+			and r.sal_navn == old.sal_navn
+			and r.senter_navn == old.senter_navn
+		)
+	)	
+)
+begin
+select RAISE(ABORT, 'salen er allerede reservert')
+end;
+
+create trigger reservasjon_kollisjon
+before insert on Reservasjon
+for each row
+when (
+	exists (
+		select 1
+		from Reservasjon r
+		where new.starttidspunkt < r.sluttidspunkt
+		and r.starttidspunkt < new.sluttidspunkt
+		and r.senter_navn = new.senter_navn
+		and r.sal_navn = new.sal_navn
+	)	
+)
+begin
+select RAISE(ABORT, 'salen er allerede reservert')
+end;
+
+-- Booking
 
 create trigger ingen_pk_endring_booking
 before update of gruppetimeID, brukerID on Booking
@@ -119,6 +163,8 @@ begin
 insert into prikk(brukerID, grunn)
 values (new.brukerID, 'sen avmelding');
 end;
+
+-- Deltatt
 
 create trigger ingen_oppdatering_deltatt
 before update on Deltatt
