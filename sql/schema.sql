@@ -88,20 +88,6 @@ create table Utestengelse (
 	check (slutt > gitt)
 );
 
-create view Utestengt as 
-	select brukerID
-	from Prikk
-	where datetime(tidspunkt, '+30 days') > CURRENT_TIMESTAMP
-	group by brukerID
-	having count(*) >= 3 
-
-	union
-
-	select brukerID
-	from Utestengelse
-	where slutt > CURRENT_TIMESTAMP
-;
-
 create table Aktivitet (
 	navn varchar(50),
 	beskrivelse text,
@@ -187,6 +173,20 @@ create table Reservasjon (
 	check (sluttidspunkt > starttidspunkt)
 );
 
+create view Utestengt as 
+	select brukerID
+	from Prikk
+	where datetime(tidspunkt, '+30 days') > CURRENT_TIMESTAMP
+	group by brukerID
+	having count(*) >= 3 
+
+	union
+
+	select brukerID
+	from Utestengelse
+	where slutt > CURRENT_TIMESTAMP
+;
+
 -- nytt for DB2
 create view GruppeTimeSlutt as
 select g.id, g.aktivitet_navn, g.tidspunkt as starttidspunkt, 
@@ -206,3 +206,4 @@ union all
 select senter_navn, sal_navn, starttidspunkt, sluttidspunkt
 from GruppetimeSlutt
 ;
+
