@@ -1,9 +1,5 @@
-create domain name_type as varchar(50);
-create domain pos_int as integer
-check (value > 0);
-
 create table Senter(
-	navn name_type,
+	navn varchar(50),
 	gateadresse varchar(100) unique not null,
 	åpningstid time not null,
 	stengetid time not null,
@@ -12,7 +8,7 @@ create table Senter(
 );
 
 create table Bemannet (
-	senter_navn name_type, 
+	senter_navn varchar(50), 
 	ukedag smallint check (ukedag between 0 and 6),
 	startidspunkt time,
 	sluttidspunkt time not null,
@@ -22,35 +18,35 @@ create table Bemannet (
 );
 
 create table Fasilitet (
-	navn name_type,
-	senter_navn name_type,
+	navn varchar(50),
+	senter_navn varchar(50),
 	primary key (navn, senter_navn),
 	foreign key (senter_navn) references Senter(navn)
 );
 
 create table Sal (
-	navn name_type,
-	senter_navn name_type, 
-	kapasitet pos_int,
+	navn varchar(50),
+	senter_navn varchar(50), 
+	kapasitet int check(kapasitet > 0),
 	primary key (navn, senter_navn),
 	foreign key (senter_navn) references Senter(navn)
 );
 
 create table Sykkel (
-	senter_navn name_type,
-	sal_navn name_type,
-	nr pos_int,
+	senter_navn varchar(50),
+	sal_navn varchar(50),
+	nr int check(nr > 0),
 	bodybikebluetooth bool not null default false,
 	primary key (senter_navn, sal_navn, nr),
 	foreign key (sal_navn, senter_navn) references Sal(navn, senter_navn)
 );
 
 create table Tredemølle (
-	senter_navn name_type,
-	sal_navn name_type,
-	nr pos_int,
-	produsent name_type,
-	maksimal_hastighet pos_int, 
+	senter_navn varchar(50),
+	sal_navn varchar(50),
+	nr int check(nr > 0),
+	produsent varchar(50),
+	maksimal_hastighet int check(maksimal_hastighet > 0), 
 	maksimal_stigning int check (maksimal_stigning >= 0), 
 	primary key(senter_navn, sal_navn, nr),
 	foreign key (sal_navn, senter_navn) references Sal(navn, senter_navn)
@@ -58,8 +54,8 @@ create table Tredemølle (
 
 create table Bruker (
 	id int,
-	fornavn name_type not null,
-	etternavn name_type not null,
+	fornavn varchar(50) not null,
+	etternavn varchar(50) not null,
 	epost varchar(254) not null unique, -- max chars allowed in email
 	mobilnr varchar(20), -- ex: '+49 909 85 323'
 	primary key (id)
@@ -68,10 +64,10 @@ create table Bruker (
 create table Besøk (
 	brukerID int,
 	tid timestamp default CURRENT_TIMESTAMP,
-	senter_navn name_type not null,
+	senter_navn varchar(50) not null,
 	primary key (brukerID, tid),
 	foreign key (brukerID) references Bruker(id),
-	foreign key (senter_navn) references Senter(navn),
+	foreign key (senter_navn) references Senter(navn)
 );
 
 create table Prikk (
@@ -92,10 +88,10 @@ create table Utestengelse (
 	check (slutt > gitt)
 );
 
-create view Utestengt as (
+create view Utestengt as 
 	select brukerID
 	from Prikk
-	where TIMESTAMPDIFF(DAY, tidspunkt, CURRENT_TIMESTAMP) < 30
+	where datetime(tidspunkt, '+30 days') > CURRENT_TIMESTAMP
 	group by brukerID
 	having count(*) >= 3 
 
@@ -104,21 +100,21 @@ create view Utestengt as (
 	select brukerID
 	from Utestengelse
 	where slutt > CURRENT_TIMESTAMP
-);
+;
 
 create table Aktivitet (
-	navn name_type,
+	navn varchar(50),
 	beskrivelse text,
-	lengde_min pos_int,
+	lengde_min int check(lengde_min > 0),
 	primary key (navn)
 );
 
 create table Gruppetime (
 	id int,
-	aktivitet_navn name_type not null, 
+	aktivitet_navn varchar(50) not null, 
 	tidspunkt timestamp not null,
-	senter_navn name_type not null,
-	sal_navn name_type not null,
+	senter_navn varchar(50) not null,
+	sal_navn varchar(50) not null,
 	instruktørID int not null,
 	primary key (id),
 	foreign key (aktivitet_navn) references Aktivitet(navn),
@@ -148,42 +144,44 @@ create table Deltatt (
 	unique(brukerID, oppmøtt_tidspunkt)
 );
 
+create trigger 
+
 create table Idrettslag (
-	navn name_type,
+	navn varchar(50),
 	primary key (navn)
 );
 
 create table IdrettslagMedlemskap (
 	brukerID int,
-	idrettslag_navn name_type,
+	idrettslag_navn varchar(50),
 	primary key (brukerID, idrettslag_navn),
 	foreign key (brukerID) references Bruker(id),
 	foreign key (idrettslag_navn) references Idrettslag(navn)
 );
 
 create table Gruppe (
-	idrettslag_navn name_type,
-	navn name_type,
+	idrettslag_navn varchar(50),
+	navn varchar(50),
 	primary key (idrettslag_navn, navn),
 	foreign key (idrettslag_navn) references Idrettslag(navn)
 );
 
 create table GruppeMedlemskap (
 	brukerID int,
-	idrettslag_navn name_type,
-	gruppe_navn name_type,
+	idrettslag_navn varchar(50),
+	gruppe_navn varchar(50),
 	primary key (brukerID, idrettslag_navn, gruppe_navn),
 	foreign key (brukerID, idrettslag_navn) references IdrettslagMedlemskap(brukerID, idrettslag_navn),
 	foreign key (gruppe_navn, idrettslag_navn) references Gruppe(navn, idrettslag_navn)
 );
 
 create table Reservasjon (
-	senter_navn name_type,
-	sal_navn name_type,
+	senter_navn varchar(50),
+	sal_navn varchar(50),
 	starttidspunkt timestamp,
 	sluttidspunkt timestamp not null,
-	idrettslag_navn name_type not null,
-	gruppe_navn name_type,
+	idrettslag_navn varchar(50) not null,
+	gruppe_navn varchar(50),
 	primary key (senter_navn, sal_navn, starttidspunkt),
 	foreign key (sal_navn, senter_navn) references Sal(navn, senter_navn),
 	foreign key (idrettslag_navn) references Idrettslag(navn),
