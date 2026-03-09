@@ -144,7 +144,20 @@ create table Deltatt (
 	unique(brukerID, oppmøtt_tidspunkt)
 );
 
-create trigger 
+create trigger sent_oppmøte
+after insert on Deltatt
+for each row
+when (
+	new.oppmøtt_tidspunkt > (
+	select datetime(tidspunkt, '-5 minutes') 
+	from Gruppetime 
+	where id = new.gruppetimeID 
+	)
+)
+begin
+insert into prikk(brukerID, grunn)
+select new.brukerID, 'sent oppmøte';
+end;
 
 create table Idrettslag (
 	navn varchar(50),
