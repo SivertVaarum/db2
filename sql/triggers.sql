@@ -1,16 +1,56 @@
 -- Gruppetime
 
+create trigger gruppetime_kollisjon_update
+before update on Gruppetime
+for each row
+when (
+	exists (
+		select 1
+		from SalOpptatt s
+		join Aktivitet a on new.aktivitet_navn = a.navn
+		where new.tidspunkt < s.sluttidspunkt
+		and s.starttidspunkt < datetime(new.tidspunkt, '+' || a.lengde_min || ' minutes')
+		and s.senter_navn = new.senter_navn
+		and s.sal_navn = new.sal_navn
+		and not ( -- samme rad
+			s.starttidspunkt = old.tidspunkt 
+			and s.sal_navn = old.sal_navn
+			and s.senter_navn = old.senter_navn
+		)
+	)	
+)
+begin
+select RAISE(ABORT, 'salen er opptatt');
+end;
+
+create trigger gruppetime_kollisjon_insert
+before insert on Gruppetime
+for each row
+when (
+	exists (
+		select 1
+		from SalOpptatt s
+		join Aktivitet a on new.aktivitet_navn = a.navn
+		where new.tidspunkt < s.sluttidspunkt
+		and s.starttidspunkt < datetime(new.tidspunkt, '+' || a.lengde_min || ' minutes')
+		and s.senter_navn = new.senter_navn
+		and s.sal_navn = new.sal_navn
+	)	
+)
+begin
+select RAISE(ABORT, 'salen er opptatt');
+end;
+
 create trigger gyldig_instruktør_update
 before update on Gruppetime
 for each row
 when (
 	exists (
 		select 1
-		from Gruppetime g
-		join Aktivitet a1 on g.aktivitet_navn = a1.navn
-		join Aktivitet a2 on new.aktivitet_navn = a2.navn	
-		where new.tidspunkt < datetime(g.tidspunkt, '+' || a1.lengde_min || ' minutes')
-		and g.tidspunkt < datetime(new.tidspunkt, '+' || a2.lengde_min || ' minutes')
+		from GruppetimeSlutt g
+		join Aktivitet a on new.aktivitet_navn = a.navn	
+		where new.tidspunkt < g.sluttidspunkt
+		and g.starttidspunkt < datetime(new.tidspunkt, '+' || a.lengde_min || ' minutes')
 		and g.instruktørID = new.instruktørID
 		and g.id != old.id
 	)	
@@ -25,11 +65,10 @@ for each row
 when (
 	exists (
 		select 1
-		from Gruppetime g
-		join Aktivitet a1 on g.aktivitet_navn = a1.navn
-		join Aktivitet a2 on new.aktivitet_navn = a2.navn	
-		where new.tidspunkt < datetime(g.tidspunkt, '+' || a1.lengde_min || ' minutes')
-		and g.tidspunkt < datetime(new.tidspunkt, '+' || a2.lengde_min || ' minutes')
+		from GruppetimeSlutt g
+		join Aktivitet a on new.aktivitet_navn = a.navn	
+		where new.tidspunkt < g.sluttidspunkt
+		and g.starttidspunkt < datetime(new.tidspunkt, '+' || a.lengde_min || ' minutes')
 		and g.instruktørID = new.instruktørID
 	)	
 )
@@ -38,43 +77,43 @@ select RAISE(ABORT, 'instruktøren er opptatt');
 end;
 
 -- Reservasjon
-create trigger reservasjon_kollisjon
+create trigger reservasjon_kollisjon_update
 before update on Reservasjon
 for each row
 when (
 	exists (
 		select 1
-		from Reservasjon r
-		where new.starttidspunkt < r.sluttidspunkt
-		and r.starttidspunkt < new.sluttidspunkt
-		and r.senter_navn = new.senter_navn
-		and r.sal_navn = new.sal_navn
+		from SalOpptatt s
+		where new.starttidspunkt < s.sluttidspunkt
+		and s.starttidspunkt < new.sluttidspunkt
+		and s.senter_navn = new.senter_navn
+		and s.sal_navn = new.sal_navn
 		and not ( -- samme rad
-			r.starttidspunkt == old.starttidspunkt 
-			and r.sal_navn == old.sal_navn
-			and r.senter_navn == old.senter_navn
+			s.starttidspunkt = old.starttidspunkt 
+			and s.sal_navn = old.sal_navn
+			and s.senter_navn = old.senter_navn
 		)
 	)	
 )
 begin
-select RAISE(ABORT, 'salen er allerede reservert')
+select RAISE(ABORT, 'salen er opptatt');
 end;
 
-create trigger reservasjon_kollisjon
+create trigger reservasjon_kollisjon_insert
 before insert on Reservasjon
 for each row
 when (
 	exists (
 		select 1
-		from Reservasjon r
-		where new.starttidspunkt < r.sluttidspunkt
-		and r.starttidspunkt < new.sluttidspunkt
-		and r.senter_navn = new.senter_navn
-		and r.sal_navn = new.sal_navn
+		from SalOpptatt s
+		where new.starttidspunkt < s.sluttidspunkt
+		and s.starttidspunkt < new.sluttidspunkt
+		and s.senter_navn = new.senter_navn
+		and s.sal_navn = new.sal_navn
 	)	
 )
 begin
-select RAISE(ABORT, 'salen er allerede reservert')
+select RAISE(ABORT, 'salen er opptatt');
 end;
 
 -- Booking
@@ -106,14 +145,12 @@ when (
 	exists (
 		select 1
 		from Booking b
-		join Gruppetime g1 on b.gruppetimeID = g1.id
-		join Gruppetime g2 on new.gruppetimeID = g2.id
-		join Aktivitet a1 on g1.aktivitet_navn = a1.navn
-		join Aktivitet a2 on g2.aktivitet_navn = a2.navn
+		join GruppetimeSlutt g1 on b.gruppetimeID = g1.id
+		join GruppetimeSlutt g2 on new.gruppetimeID = g2.id
 		where b.brukerID = new.brukerID
 		and b.avmeldt_tidspunkt is null
-		and g2.tidspunkt < datetime(g1.tidspunkt, '+' || a1.lengde_min || ' minutes')
-		and g1.tidspunkt < datetime(g2.tidspunkt, '+' || a2.lengde_min || ' minutes')
+		and g2.starttidspunkt < g1.sluttidspunkt
+		and g1.starttidspunkt < g2.sluttidspunkt
 	)
 )
 begin

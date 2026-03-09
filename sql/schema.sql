@@ -186,3 +186,23 @@ create table Reservasjon (
 	foreign key (gruppe_navn, idrettslag_navn) references Gruppe(navn, idrettslag_navn),
 	check (sluttidspunkt > starttidspunkt)
 );
+
+-- nytt for DB2
+create view GruppeTimeSlutt as
+select g.id, g.aktivitet_navn, g.tidspunkt as starttidspunkt, 
+	datetime(g.tidspunkt, '+' || a.lengde_min || ' minutes') as sluttidspunkt, 
+	g.senter_navn, g.sal_navn, g.instruktørID
+from Gruppetime G
+join Aktivitet a on g.aktivitet_navn = a.navn
+;
+
+create view SalOpptatt as
+
+select senter_navn, sal_navn, starttidspunkt, sluttidspunkt
+from Reservasjon
+
+union all
+
+select senter_navn, sal_navn, starttidspunkt, sluttidspunkt
+from GruppetimeSlutt
+;
