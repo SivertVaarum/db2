@@ -1,12 +1,17 @@
 import sqlite3
 
 con = sqlite3.connect("../sql/test.db")
+con.execute("PRAGMA foreign_keys = ON") # foreign keys må være på
 cursor = con.cursor()
 
 def sjekk_om_påmeldt(data):
-    query = "SELECT 1 " \
-            "FROM Gruppetime INNER JOIN Booking on Gruppetime.id = Booking.gruppetimeID " \
-            "WHERE Gruppetime.aktivitet_navn = :aktivitet AND Gruppetime.tidspunkt = :tidspunkt AND Booking.brukerID = :brukerID" 
+
+    query = """
+    SELECT 1 
+    FROM Gruppetime INNER JOIN Booking on Gruppetime.id = Booking.gruppetimeID 
+    WHERE Gruppetime.aktivitet_navn = :aktivitet AND Gruppetime.tidspunkt = :tidspunkt AND Booking.brukerID = :brukerID
+    """
+
     cursor.execute(query, data)
 
     if not cursor.fetchone(): #Ikke påmeldt, bra!
@@ -14,7 +19,12 @@ def sjekk_om_påmeldt(data):
     return True
 
 def meld_på(data):
-    query = "INSERT INTO Booking (gruppetimeID, brukerID) VALUES (:gruppetimeID, :brukerID)"
+
+    query = """
+    INSERT INTO Booking (gruppetimeID, brukerID)
+    VALUES (:gruppetimeID, :brukerID)
+    """
+
     try:
         cursor.execute(query, data)
         con.commit()
@@ -31,7 +41,15 @@ data = {
 }
 
 #finnes aktiviteten?
-query = "SELECT id FROM Gruppetime WHERE aktivitet_navn = :aktivitet AND tidspunkt = :tidspunkt AND senter_navn = :STED AND sal_navn = :SAL"
+query = """
+SELECT id 
+FROM Gruppetime 
+WHERE aktivitet_navn = :aktivitet 
+AND tidspunkt = :tidspunkt 
+AND senter_navn = :STED 
+AND sal_navn = :SAL
+"""
+
 cursor.execute(query, data)
 gruppetimeID = cursor.fetchone()
 
@@ -49,3 +67,5 @@ if gruppetimeID: # aktiviteten finnes
         print("Bruker finne ikke...")
 else:
     print("Aktuell time finnes ikke...")
+
+con.close()
