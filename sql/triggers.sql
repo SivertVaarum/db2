@@ -224,3 +224,19 @@ begin
 insert into prikk(brukerID, grunn)
 values (new.brukerID, 'sent oppmøte');
 end;
+
+create trigger avmeldt
+before insert on Deltatt
+for each row
+when (
+	exists (
+		select 1
+		from Booking b
+		where new.brukerID == b.brukerID
+		and new.gruppetimeID = b.gruppetimeID
+		and b.avmeldt_tidspunkt is not null
+	)	
+)
+begin
+select RAISE(ABORT, 'brukeren er avmeldt');
+end;
