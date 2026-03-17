@@ -11,13 +11,8 @@ UKEDAGER = {
     "søndag": 7,
 }
 
-QUERY = """
-    SELECT aktivitet_navn, tidspunkt, senter_navn
-    FROM Gruppetime
-    WHERE tidspunkt >= :startdato
-        AND tidspunkt < date(:startdato, '+7 days')
-    ORDER BY tidspunkt;
-"""
+with open("sql/weekly_schedule.sql", "r", encoding="utf-8") as fil:
+    QUERY = fil.read()
 
 
 def hent_ukeplan(år: int, uke: int, startdag: str, dbnavn: str = "sql/test.db"):
