@@ -13,12 +13,6 @@ def registrer_oppmote(data, dbnavn="sql/test.db"):
     WHERE u.epost = :brukernavn
       AND b.gruppetimeID = :trening_id
       AND b.avmeldt_tidspunkt IS NULL
-      AND NOT EXISTS (
-        SELECT 1
-        FROM Deltatt d
-        WHERE d.gruppetimeID = b.gruppetimeID
-          AND d.brukerID = b.brukerID
-      )
     """
 
     cursor.execute(query, data)
