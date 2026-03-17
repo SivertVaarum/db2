@@ -1,6 +1,6 @@
 import sqlite3;
 
-con = sqlite3.connect(dbnavn)
+con = sqlite3.connect("../sql/test.db")
 cursor = con.cursor()
 
 def sjekk_om_påmeldt(data):
@@ -12,7 +12,8 @@ def sjekk_om_påmeldt(data):
         return False
     return True
 def meld_på(data):
-    query = "INSERT INTO Booking (epost, aktivite_)VALUE"
+    query = "INSERT INTO Booking (epost, aktivitet, senter, tidspunkt) VALUE (:epost, :aktivitet, :STED, :tidspunkt)"
+    print("ferdig")
 
 dbnavn = "test"
 data = {
