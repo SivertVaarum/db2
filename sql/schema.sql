@@ -125,8 +125,10 @@ create table Deltatt (
 	brukerID int,
 	oppmøtt_tidspunkt timestamp default CURRENT_TIMESTAMP,
 	primary key (gruppetimeID, brukerID),
-	foreign key (gruppetimeID) references Gruppetime(id),
-	foreign key (brukerID) references Bruker(id),
+	foreign key (gruppetimeID, brukerID) references Booking(gruppetimeID, brukerID), -- nytt for db2 
+	-- DB1
+	--foreign key (gruppetimeID) references Gruppetime(id),
+	--foreign key (brukerID) references Bruker(id),
 	unique(brukerID, oppmøtt_tidspunkt)
 );
 
