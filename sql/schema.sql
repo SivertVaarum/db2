@@ -88,20 +88,6 @@ create table Utestengelse (
 	check (slutt > gitt)
 );
 
-create view Utestengt as 
-	select brukerID
-	from Prikk
-	where datetime(tidspunkt, '+30 days') > CURRENT_TIMESTAMP
-	group by brukerID
-	having count(*) >= 3 
-
-	union
-
-	select brukerID
-	from Utestengelse
-	where slutt > CURRENT_TIMESTAMP
-;
-
 create table Aktivitet (
 	navn varchar(50),
 	beskrivelse text,
@@ -134,38 +120,6 @@ create table Booking (
 	foreign key (brukerID) references Bruker(id)
 );
 
-create trigger sen_avmelding_insert
-after insert on Booking
-for each row
-when (
-	new.avmeldt_tidspunkt > (
-	select datetime(tidspunkt, '-1 hour') 
-	from Gruppetime 
-	where id = new.gruppetimeID 
-	)
-)
-begin
-insert into prikk(brukerID, grunn)
-select new.brukerID, 'sen avmelding';
-end;
-
-create trigger sen_avmelding_update
-after update on Booking
-for each row
-when (
-	old.avmeldt_tidspunkt is null
-	and
-	new.avmeldt_tidspunkt > (
-	select datetime(tidspunkt, '-1 hour') 
-	from Gruppetime 
-	where id = new.gruppetimeID 
-	)
-)
-begin
-insert into prikk(brukerID, grunn)
-select new.brukerID, 'sen avmelding';
-end;
-
 create table Deltatt (
 	gruppetimeID int, 
 	brukerID int,
@@ -175,22 +129,6 @@ create table Deltatt (
 	foreign key (brukerID) references Bruker(id),
 	unique(brukerID, oppmøtt_tidspunkt)
 );
-
--- DOES NOT COVER UPDATES
-create trigger sent_oppmøte
-after insert on Deltatt
-for each row
-when (
-	new.oppmøtt_tidspunkt > (
-	select datetime(tidspunkt, '-5 minutes') 
-	from Gruppetime 
-	where id = new.gruppetimeID 
-	)
-)
-begin
-insert into prikk(brukerID, grunn)
-select new.brukerID, 'sent oppmøte';
-end;
 
 create table Idrettslag (
 	navn varchar(50),
@@ -234,3 +172,38 @@ create table Reservasjon (
 	foreign key (gruppe_navn, idrettslag_navn) references Gruppe(navn, idrettslag_navn),
 	check (sluttidspunkt > starttidspunkt)
 );
+
+create view Utestengt as 
+	select brukerID
+	from Prikk
+	where datetime(tidspunkt, '+30 days') > CURRENT_TIMESTAMP
+	group by brukerID
+	having count(*) >= 3 
+
+	union
+
+	select brukerID
+	from Utestengelse
+	where slutt > CURRENT_TIMESTAMP
+;
+
+-- nytt for DB2
+create view GruppeTimeSlutt as
+select g.id, g.aktivitet_navn, g.tidspunkt as starttidspunkt, 
+	datetime(g.tidspunkt, '+' || a.lengde_min || ' minutes') as sluttidspunkt, 
+	g.senter_navn, g.sal_navn, g.instruktørID
+from Gruppetime G
+join Aktivitet a on g.aktivitet_navn = a.navn
+;
+
+create view SalOpptatt as
+
+select senter_navn, sal_navn, starttidspunkt, sluttidspunkt
+from Reservasjon
+
+union all
+
+select senter_navn, sal_navn, starttidspunkt, sluttidspunkt
+from GruppetimeSlutt
+;
+
