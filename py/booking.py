@@ -4,7 +4,7 @@ con = sqlite3.connect("../sql/test.db")
 cursor = con.cursor()
 
 def sjekk_om_påmeldt(data):
-    query = "SELECT 1" \
+    query = "SELECT 1 " \
             "FROM Gruppetime INNER JOIN Booking on Gruppetime.id = Booking.gruppetimeID " \
             "WHERE Gruppetime.aktivitet_navn = :aktivitet AND Gruppetime.tidspunkt = :tidspunkt AND Booking.brukerID = :brukerID" 
     cursor.execute(query, data)
