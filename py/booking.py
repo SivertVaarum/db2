@@ -1,4 +1,4 @@
-import sqlite3;
+import sqlite3
 
 con = sqlite3.connect("../sql/test.db")
 cursor = con.cursor()
@@ -14,9 +14,13 @@ def sjekk_om_påmeldt(data):
     return True
 
 def meld_på(data):
-    query = "INSERT INTO Booking (gruppetimeID, brukerID) VALUE (:gruppetimeID, :brukerID)"
-    cursor.execute(query, data)
-    print("meldt på")
+    query = "INSERT INTO Booking (gruppetimeID, brukerID) VALUES (:gruppetimeID, :brukerID)"
+    try:
+        cursor.execute(query, data)
+        con.commit()
+        print("meldt på")
+    except sqlite3.IntegrityError:
+        print("sjekk at brukeren ikke allerede er påmeldt")
 
 data = {
     "aktivitet": input("Oppgi aktivitet: "),
