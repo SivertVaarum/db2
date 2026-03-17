@@ -26,24 +26,24 @@ data = {
     "aktivitet": input("Oppgi aktivitet: "),
     "epost":  input("Oppgi epost: "),
     "tidspunkt":  input("Oppgi tid: "),
-    "STED": input("Oppgi sal (default øya): ").strip() or "Øya",
+    "STED": input("Oppgi senter (default øya): ").strip() or "Øya treningssenter",
     "SAL": input("Oppgi sal (default sykkelsal): ").strip() or "Sykkelsal",
 }
 
 #finnes aktiviteten?
-query = "SELECT gruppetimeID FROM Gruppetime WHERE aktivitet_navn = :aktivitet AND tidspunkt = :tidspunkt AND senter_navn = :STED AND sal_navn = :SAL"
+query = "SELECT id FROM Gruppetime WHERE aktivitet_navn = :aktivitet AND tidspunkt = :tidspunkt AND senter_navn = :STED AND sal_navn = :SAL"
 cursor.execute(query, data)
 gruppetimeID = cursor.fetchone()
 
 # finnes brukeren?
-query = "SELECT brukerID from Bruker WHERE Bruker.epost = :epost"
+query = "SELECT id from Bruker WHERE Bruker.epost = :epost"
 cursor.execute(query, data)
 brukerID = cursor.fetchone()
 
 if gruppetimeID: # aktiviteten finnes
-    data["gruppetimeID"] = gruppetimeID
+    data["gruppetimeID"] = gruppetimeID[0]
     if brukerID:
-        data["brukerID"] = brukerID
+        data["brukerID"] = brukerID[0]
         meld_på(data)
     else:
         print("Bruker finne ikke...")
