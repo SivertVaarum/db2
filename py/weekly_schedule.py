@@ -1,39 +1,32 @@
 import sqlite3
+from datetime import date
+
+UKEDAGER = {
+    "mandag": 1,
+    "tirsdag": 2,
+    "onsdag": 3,
+    "torsdag": 4,
+    "fredag": 5,
+    "lørdag": 6,
+    "søndag": 7,
+}
 
 QUERY = """
-WITH input AS (
-    SELECT
-        date(:startdag) AS startdag,
-        :uke AS uke
-),
-periode AS (
-    SELECT
-        date(startdag, ((uke - 1) * 7) || ' days') AS fra_dato,
-        date(startdag, ((uke * 7) - 1) || ' days') AS til_dato
-    FROM input
-)
-SELECT
-    aktivitet_navn, tidspunkt, senter_navn
-FROM
-    Gruppetime JOIN periode
-WHERE
-    tidspunkt >= fra_dato AND tidspunkt < date(til_dato, '+1 day')
-ORDER BY
-    tidspunkt
+    SELECT aktivitet_navn, tidspunkt, senter_navn
+    FROM Gruppetime
+    WHERE tidspunkt >= :startdato
+        AND tidspunkt < date(:startdato, '+7 days')
+    ORDER BY tidspunkt;
 """
 
 
-def hent_ukeplan(
-    startdag: str, uke: int, dbnavn: str = "sql/test.db"
-) -> tuple[list[str], list[tuple]]:
-    params = {
-        "startdag": startdag,
-        "uke": uke,
-    }
+def hent_ukeplan(år: int, uke: int, startdag: str, dbnavn: str = "sql/test.db"):
+    startdato = date.fromisocalendar(år, uke, UKEDAGER[startdag.lower()]).isoformat()
+
 
     con = sqlite3.connect(dbnavn)
     cursor = con.cursor()
-    cursor.execute(QUERY, params)
+    cursor.execute(QUERY, {"startdato": startdato})
     rader = cursor.fetchall()
     kolonner = [beskrivelse[0] for beskrivelse in cursor.description or []]
     con.close()
@@ -41,10 +34,11 @@ def hent_ukeplan(
 
 
 if __name__ == "__main__":
-    startdag = input("Oppgi startdag (YYYY-MM-DD): ").strip()
+    år = int(input("Oppgi år: ").strip())
+    startdag = input("Oppgi startdag (f.eks. mandag): ").strip()
     uke = int(input("Oppgi uke-nummer (f.eks. 12): ").strip())
 
-    kolonner, rader = hent_ukeplan(startdag=startdag, uke=uke)
+    kolonner, rader = hent_ukeplan(år = år, startdag=startdag, uke=uke)
 
     if not rader:
         print("Ingen treninger funnet i valgt uke.")
