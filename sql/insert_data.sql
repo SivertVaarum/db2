@@ -43,17 +43,12 @@ INSERT INTO Gruppetime (id, aktivitet_navn, tidspunkt, senter_navn, sal_navn, in
 (11, 'Spin 4x4', '2026-03-18 17:30:00', 'Øya treningssenter', 'Sykkelsal', 10),
 (12, 'Spin45', '2026-03-18 18:30:00', 'Øya treningssenter', 'Sykkelsal', 11),
 (13, 'Spin 8x3', '2026-03-18 19:30:00', 'Øya treningssenter', 'Sykkelsal', 12),
-(14, 'Spin 4x4', '2001-01-01 00:00:15', 'Øya treningssenter', 'Sykkelsal', 1);
 
 INSERT INTO Besøk (brukerID, tid, senter_navn) VALUES 
 (13, '2003-01-01 07:00:00', 'Øya treningssenter'),
 (13, '2026-17-03 10:41:00', 'Øya treningssenter');
 
 INSERT INTO Booking VALUES 
-(1, 13, '2000-01-01 00:00:00', NULL),
-(2, 13, '2000-01-01 00:00:00', NULL),
-(14, 13, '2001-01-01 00:00:01', NULL),
-
 (1, 1, '2026-03-16 06:30:00', NULL),
 (1, 2, '2026-03-16 06:31:00', NULL),
 (1, 3, '2026-03-16 06:32:00', NULL),
@@ -67,7 +62,6 @@ INSERT INTO Booking VALUES
 INSERT INTO Deltatt (gruppetimeID, brukerID, oppmøtt_tidspunkt) VALUES 
 (1, 13, '2026-03-16 06:50:00'),
 (2, 13, '2026-03-16 06:20:00'),
-(14, 13,'2001-01-01 00:00:01'),
 
 (1, 1, '2026-03-16 06:50:00'),
 (1, 2, '2026-03-16 06:51:00'),
