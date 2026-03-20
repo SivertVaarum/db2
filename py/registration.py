@@ -7,12 +7,20 @@ def registrer_oppmote(data):
     con.execute("PRAGMA foreign_keys = ON") # foreign keys må være på
     cursor = con.cursor()
 
-    query = """
-    INSERT INTO Deltatt (gruppetimeID, brukerID)
-    SELECT :trening_id, id
-    From Bruker
-    WHERE epost = :brukernavn
-    """
+    if data["oppmøtt_tidspunkt"]:
+        query = """
+        INSERT INTO Deltatt (gruppetimeID, brukerID, oppmøtt_tidspunkt)
+        SELECT :trening_id, id, :oppmøtt_tidspunkt
+        From Bruker
+        WHERE epost = :brukernavn
+        """
+    else:
+        query = """
+        INSERT INTO Deltatt (gruppetimeID, brukerID)
+        SELECT :trening_id, id
+        From Bruker
+        WHERE epost = :brukernavn
+        """
 
     try: 
         cursor.execute(query, data)
@@ -29,7 +37,8 @@ def registrer_oppmote(data):
 
 if __name__ == "__main__":
     data = {
-        "brukernavn": input("Oppgi brukernavn (epost): "),
-        "trening_id": int(input("Oppgi trening (gruppetimeID): ")),
+        "brukernavn": input("Oppgi brukernavn (epost): ").strip(),
+        "trening_id": int(input("Oppgi trening (gruppetimeID): ").strip()),
+        "oppmøtt_tidspunkt": input("Oppgi oppmøtt tidspunkt (default nå): ").strip()
     }
     registrer_oppmote(data)
