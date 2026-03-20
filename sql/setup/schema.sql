@@ -228,7 +228,7 @@ and s.kapasitet > (
 		b2.påmeldt_tidspunkt < b.påmeldt_tidspunkt -- meldt seg på før
 		or (b2.påmeldt_tidspunkt = b.påmeldt_tidspunkt and b2.brukerID < b.brukerID) -- meldt seg på samtidig, går på brukerID
 	)
-)
+);
 
 -- viser alle på ventelisten
 create view Venteliste as
@@ -240,7 +240,7 @@ and not exists (
 	from GruppetimeDeltakere g 
 	where g.gruppetimeID = b.gruppetimeID
 	and g.brukerID = b.brukerID
-)
+);
 
 -- ikke møtt enda
 create view IkkeMøtt as
@@ -251,7 +251,7 @@ where not exists (
 	from Deltatt d
 	where d.gruppetimeID = g.gruppetimeID
 	and d.brukerID = g.brukerID
-)
+);
 
 create view MVP as
 WITH månedsteller AS (
@@ -265,5 +265,5 @@ WITH månedsteller AS (
 )
 SELECT mt.navn, mt.antall, mt.årmåned
 FROM månedsteller as mt
-WHERE mt.antall = (SELECT MAX(m.antall) FROM månedsteller as m WHERE mt.årmåned = m.årmåned)
+WHERE mt.antall = (SELECT MAX(m.antall) FROM månedsteller as m WHERE mt.årmåned = m.årmåned);
 
