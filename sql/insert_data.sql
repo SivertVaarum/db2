@@ -16,7 +16,8 @@ INSERT INTO Bruker (id, fornavn, etternavn, epost, mobilnr) VALUES
 (9, 'Ada', 'Johansen Røe', 'ada.johansen.roe@sit.no', '90000009'),
 (10, 'Sindre', 'Kvam Strand', 'sindre.kvam.strand@sit.no', '90000010'),
 (11, 'Kaja', 'Sveen', 'kaja.sveen@sit.no', '90000011'),
-(12, 'Amalie', 'Moen Hegge', 'amalie.moen.hegge@sit.no', '90000012');
+(12, 'Amalie', 'Moen Hegge', 'amalie.moen.hegge@sit.no', '90000012'),
+(13, 'Johnny', 'Normann', 'johnny@stud.ntnu.no', '90000013');
 
 INSERT INTO Senter (navn, gateadresse, åpningstid, stengetid) VALUES
 ('Øya treningssenter', 'Vangslundsgate 2, Trondheim', '05:00', '23:59'),
@@ -41,4 +42,20 @@ INSERT INTO Gruppetime (id, aktivitet_navn, tidspunkt, senter_navn, sal_navn, in
 (10, 'Spin45', '2026-03-18 16:30:00', 'Dragvoll', 'Dragvoll Spinningsal', 9),
 (11, 'Spin 4x4', '2026-03-18 17:30:00', 'Øya treningssenter', 'Sykkelsal', 10),
 (12, 'Spin45', '2026-03-18 18:30:00', 'Øya treningssenter', 'Sykkelsal', 11),
-(13, 'Spin 8x3', '2026-03-18 19:30:00', 'Øya treningssenter', 'Sykkelsal', 12);
+(13, 'Spin 8x3', '2026-03-18 19:30:00', 'Øya treningssenter', 'Sykkelsal', 12),
+(14, 'Spin 4x4', '2001-01-01 00:00:15', 'Øya treningssenter', 'Sykkelsal', 1);
+
+INSERT INTO Besøk (brukerID, tid, senter_navn) VALUES 
+(13, '2003-01-01 07:00:00', 'Øya treningssenter'),
+(13, '2026-17-03 10:41:00', 'Øya treningssenter');
+
+INSERT INTO Booking VALUES 
+(1, 13, '2000-01-01 00:00:00', NULL),
+(2, 13, '2000-01-01 00:00:00', NULL),
+(14, 13, '2001-01-01 00:00:01', NULL);
+
+INSERT INTO Deltatt (gruppetimeID, brukerID, oppmøtt_tidspunkt) VALUES 
+(1, 13, '2026-03-16 06:50:00'),
+(2, 13, '2026-03-16 06:20:00'),
+(14, 13,'2001-01-01 00:00:01');
+
