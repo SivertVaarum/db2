@@ -1,5 +1,5 @@
 PRAGMA foreign_keys = ON;
 
-.read schema.sql
-.read triggers.sql
-.read insert_data.sql
+.read setup/schema.sql
+.read setup/triggers.sql
+.read setup/insert_data.sql

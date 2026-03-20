@@ -242,6 +242,16 @@ and not exists (
 	and g.brukerID = b.brukerID
 )
 
+-- ikke møtt enda
+create view IkkeMøtt as
+select brukerID, gruppetimeID
+from GruppetimeDeltakere g
+where not exists (
+	select 1
+	from Deltatt d
+	where d.gruppetimeID = g.gruppetimeID
+	and d.brukerID = g.brukerID
+)
 
 create view MVP as
 WITH månedsteller AS (
