@@ -11,11 +11,11 @@ UKEDAGER = {
     "søndag": 7,
 }
 
-with open("sql/weekly_schedule.sql", "r", encoding="utf-8") as fil:
+with open("../sql/weekly_schedule.sql", "r", encoding="utf-8") as fil:
     QUERY = fil.read()
 
 
-def hent_ukeplan(år: int, uke: int, startdag: str, dbnavn: str = "sql/test.db"):
+def hent_ukeplan(år: int, uke: int, startdag: str, dbnavn: str = "../sql/databasefil.db"):
     startdato = date.fromisocalendar(år, uke, UKEDAGER[startdag.lower()]).isoformat()
 
 

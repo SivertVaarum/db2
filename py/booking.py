@@ -1,6 +1,6 @@
 import sqlite3
 
-con = sqlite3.connect("../sql/test.db")
+con = sqlite3.connect("../sql/databasefil.db")
 con.execute("PRAGMA foreign_keys = ON") # foreign keys må være på
 cursor = con.cursor()
 

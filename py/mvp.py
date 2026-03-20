@@ -1,9 +1,9 @@
 import sqlite3
 
-with open("sql/mvp.sql", "r", encoding="utf-8") as fil:
+with open("../sql/mvp.sql", "r", encoding="utf-8") as fil:
     QUERY = fil.read()
 
-def hent_mvp(år: int, month: str, dbnavn="sql/test.db"):
+def hent_mvp(år: int, month: str, dbnavn="../sql/databasefil.db"):
 
     con = sqlite3.connect(dbnavn)
     cursor = con.cursor()

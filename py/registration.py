@@ -1,6 +1,6 @@
 import sqlite3
 
-dbnavn = "../sql/test.db"
+dbnavn = "../sql/databasefil.db"
 
 def registrer_oppmote(data):
     con = sqlite3.connect(dbnavn)
