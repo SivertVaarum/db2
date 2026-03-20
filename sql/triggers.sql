@@ -173,6 +173,21 @@ insert into prikk(brukerID, grunn)
 values (new.brukerID, 'sen avmelding');
 end;
 
+create trigger stengt_påmelding
+before insert on Booking
+for each row
+when (
+	exists (
+		select 1
+		from Gruppetime g
+		where g.tidspunkt < new.påmeldt_tidspunkt
+		and g.id = new.gruppetimeID
+	)
+)
+begin
+select RAISE(ABORT, 'påmelding er stengt');
+end;
+
 create trigger ulovlige_endringer_oppmøte
 before update of avmeldt_tidspunkt on Booking
 for each row
