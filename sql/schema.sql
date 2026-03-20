@@ -255,5 +255,5 @@ WITH månedsteller AS (
 )
 SELECT mt.navn, mt.antall, mt.årmåned
 FROM månedsteller as mt
-WHERE mt.antall = (SELECT MAX(m.antall) FROM månedsteller as m WHERE mt.årmåned == m.årmåned)
+WHERE mt.antall = (SELECT MAX(m.antall) FROM månedsteller as m WHERE mt.årmåned = m.årmåned)
 

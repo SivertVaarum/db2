@@ -133,7 +133,7 @@ when (
 		select 1
 		from Prikk
 		where datetime(tidspunkt, '+30 days') > new.påmeldt_tidspunkt
-		and brukerID == new.brukerID
+		and brukerID = new.brukerID
 		group by brukerID
 		having count(*) >= 3 
 	)
@@ -141,7 +141,7 @@ when (
 		select 1
 		from Utestengelse
 		where slutt > new.påmeldt_tidspunkt
-		and brukerID == new.brukerID
+		and brukerID = new.brukerID
 	)
 )
 begin
@@ -156,7 +156,7 @@ when (
 		select 1
 		from Prikk
 		where datetime(tidspunkt, '+30 days') > new.påmeldt_tidspunkt
-		and brukerID == new.brukerID
+		and brukerID = new.brukerID
 		group by brukerID
 		having count(*) >= 3 
 	)
@@ -164,7 +164,7 @@ when (
 		select 1
 		from Utestengelse
 		where slutt > new.påmeldt_tidspunkt
-		and brukerID == new.brukerID
+		and brukerID = new.brukerID
 	)
 )
 begin
@@ -280,7 +280,7 @@ when (
 	exists (
 		select 1
 		from Booking b
-		where new.brukerID == b.brukerID
+		where new.brukerID = b.brukerID
 		and new.gruppetimeID = b.gruppetimeID
 		and b.avmeldt_tidspunkt is not null
 	)	
