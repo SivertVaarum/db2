@@ -53,12 +53,11 @@ create table Tredemølle (
 );
 
 create table Bruker (
-	id int,
+	id integer primary key,
 	fornavn varchar(50) not null,
 	etternavn varchar(50) not null,
 	epost varchar(254) not null unique, -- max chars allowed in email
 	mobilnr varchar(20), -- ex: '+49 909 85 323'
-	primary key (id)
 );
 
 create table Besøk (
@@ -72,11 +71,10 @@ create table Besøk (
 
 -- endret for db2, lagt til id slik at prikker ikke kolliderer lenger
 create table Prikk (
-	id int,
+	id integer primary key,
 	brukerID int not null,
 	tidspunkt timestamp default CURRENT_TIMESTAMP not null,
 	grunn varchar(255),
-	primary key (id),
 	foreign key (brukerID) references Bruker(id)
 );
 
@@ -98,13 +96,12 @@ create table Aktivitet (
 );
 
 create table Gruppetime (
-	id int,
+	id integer primary key,
 	aktivitet_navn varchar(50) not null, 
 	tidspunkt timestamp not null,
 	senter_navn varchar(50) not null,
 	sal_navn varchar(50) not null,
 	instruktørID int not null,
-	primary key (id),
 	foreign key (aktivitet_navn) references Aktivitet(navn),
 	foreign key (sal_navn, senter_navn) references Sal(navn, senter_navn),
 	foreign key (instruktørID) references Bruker(id),

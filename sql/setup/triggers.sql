@@ -221,7 +221,7 @@ begin
 select RAISE(ABORT, 'påmelding er stengt');
 end;
 
-create trigger ulovlige_endringer_oppmøte
+create trigger ulovlige_endringer_avmelding
 before update of avmeldt_tidspunkt on Booking
 for each row
 when (
@@ -273,6 +273,8 @@ insert into prikk(brukerID, grunn)
 values (new.brukerID, 'sent oppmøte');
 end;
 
+-- kunne sjekket at de ikke er på venteliste, men velger å ikke gjøre det
+-- siden kan være situasjon hvor person på venteliste stiller opp likevel
 create trigger avmeldt
 before insert on Deltatt
 for each row

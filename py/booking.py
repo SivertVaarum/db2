@@ -4,39 +4,60 @@ con = sqlite3.connect("../sql/databasefil.db")
 con.execute("PRAGMA foreign_keys = ON") # foreign keys må være på
 cursor = con.cursor()
 
-def sjekk_om_påmeldt(data):
+def sjekk_om_avmeldt(data):
 
     query = """
-    SELECT 1 
-    FROM Gruppetime INNER JOIN Booking on Gruppetime.id = Booking.gruppetimeID 
-    WHERE Gruppetime.aktivitet_navn = :aktivitet AND Gruppetime.tidspunkt = :tidspunkt AND Booking.brukerID = :brukerID
+    SELECT avmeldt_tidspunkt 
+    FROM Booking 
+    WHERE brukerID = :brukerID AND gruppetimeID = :gruppetimeID
     """
 
     cursor.execute(query, data)
 
-    if not cursor.fetchone(): #Ikke påmeldt, bra!
-        return False
-    return True
+    return cursor.fetchone()
 
 def meld_på(data):
 
-    if not data["påmeldt"]:
-        query = """
-        INSERT INTO Booking (gruppetimeID, brukerID)
-        VALUES (:gruppetimeID, :brukerID)
+    rad = sjekk_om_avmeldt(data)
+
+    if rad is None:
+        # ingen booking eksisterer
+        if data["påmeldt"] is None:
+            query = """
+            INSERT INTO Booking (gruppetimeID, brukerID)
+            VALUES (:gruppetimeID, :brukerID)
+            """
+        else:
+            query = """
+            INSERT INTO Booking (gruppetimeID, brukerID, påmeldt_tidspunkt)
+            VALUES (:gruppetimeID, :brukerID, :påmeldt)
+            """
+
+    elif rad[0] is not None:
+        param = "CURRENT_TIMESTAMP" if data["påmeldt"] is None else ":påmeldt"
+        # booking eksisterer men avmeldt
+        query = f"""
+        UPDATE Booking
+        SET avmeldt_tidspunkt = NULL, påmeldt_tidspunkt = {param}
+        WHERE brukerID = :brukerID
+        AND gruppetimeID = :gruppetimeID
         """
     else:
-        query = """
-        INSERT INTO Booking (gruppetimeID, brukerID, påmeldt_tidspunkt)
-        VALUES (:gruppetimeID, :brukerID, :påmeldt)
-        """
+        print("Bruker er allerede meldt på")
+        return
 
     try:
         cursor.execute(query, data)
         con.commit()
     except sqlite3.IntegrityError as e:
         print(e)
+        con.rollback()
+        return
 
+    print_resultat(data)
+
+
+def print_resultat(data):
     query = """
     SELECT 1
     FROM GruppetimeDeltakere
@@ -56,7 +77,7 @@ data = {
     "aktivitet": input("Oppgi aktivitet: ").strip(),
     "epost":  input("Oppgi epost: ").strip(),
     "tidspunkt":  input("Oppgi tid: ").strip(),
-    "påmeldt": input("Oppgi påmeldt tidspunkt (default nå): ").strip(),
+    "påmeldt": input("Oppgi påmeldt tidspunkt (default nå): ").strip() or None,
     "STED": input("Oppgi senter (default øya): ").strip() or "Øya treningssenter",
     "SAL": input("Oppgi sal (default sykkelsal): ").strip() or "Sykkelsal",
 }
@@ -85,7 +106,7 @@ if gruppetimeID: # aktiviteten finnes
         data["brukerID"] = brukerID[0]
         meld_på(data)
     else:
-        print("Bruker finne ikke...")
+        print("Bruker finnes ikke...")
 else:
     print("Aktuell time finnes ikke...")
 

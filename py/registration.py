@@ -30,6 +30,7 @@ def registrer_oppmote(data):
         else:
             print("Oppmøte registrert.")
     except sqlite3.IntegrityError as e:
+        con.rollback()
         print(e)
     finally:
         con.close()
