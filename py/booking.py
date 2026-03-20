@@ -29,8 +29,8 @@ def meld_på(data):
         cursor.execute(query, data)
         con.commit()
         print("meldt på")
-    except sqlite3.IntegrityError:
-        print("sjekk at brukeren ikke allerede er påmeldt")
+    except sqlite3.IntegrityError as e:
+        print(e)
 
 data = {
     "aktivitet": input("Oppgi aktivitet: "),

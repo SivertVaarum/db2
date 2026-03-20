@@ -21,8 +21,8 @@ def registrer_oppmote(data):
             print("Brukeren finnes ikke.")
         else:
             print("Oppmøte registrert.")
-    except sqlite3.IntegrityError:
-        print("Booking er ikke gyldig, sjekk at brukeren er påmeldt med en booking")
+    except sqlite3.IntegrityError as e:
+        print(e)
     finally:
         con.close()
 
