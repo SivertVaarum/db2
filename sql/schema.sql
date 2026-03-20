@@ -209,3 +209,16 @@ select senter_navn, sal_navn, starttidspunkt, sluttidspunkt
 from GruppetimeSlutt
 ;
 
+create view MVP as
+WITH månedsteller AS (
+    SELECT b.id,
+           b.fornavn || ' ' || b.etternavn AS navn,
+           COUNT(*) AS antall,
+		   STRFTIME('%Y-%m', d.oppmøtt_tidspunkt) as mont
+    FROM Bruker b
+    JOIN Deltatt d ON b.id = d.brukerID
+    GROUP BY b.id, b.fornavn, b.etternavn, mont
+)
+SELECT mt.navn, mt.antall, mt.mont
+FROM månedsteller as mt
+WHERE mt.antall = (SELECT MAX(m.antall) FROM månedsteller as m WHERE mt.mont == m.mont)
