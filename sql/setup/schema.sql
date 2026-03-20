@@ -57,7 +57,7 @@ create table Bruker (
 	fornavn varchar(50) not null,
 	etternavn varchar(50) not null,
 	epost varchar(254) not null unique, -- max chars allowed in email
-	mobilnr varchar(20), -- ex: '+49 909 85 323'
+	mobilnr varchar(20) -- ex: '+49 909 85 323'
 );
 
 create table Besøk (
