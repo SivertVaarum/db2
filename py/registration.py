@@ -1,29 +1,30 @@
 import sqlite3
 
+dbnavn = "../sql/test.db"
 
-def registrer_oppmote(data, dbnavn="sql/test.db"):
+def registrer_oppmote(data):
     con = sqlite3.connect(dbnavn)
+    con.execute("PRAGMA foreign_keys = ON") # foreign keys må være på
     cursor = con.cursor()
 
     query = """
     INSERT INTO Deltatt (gruppetimeID, brukerID)
-    SELECT b.gruppetimeID, b.brukerID
-    FROM Booking b
-    JOIN Bruker u ON u.id = b.brukerID
-    WHERE u.epost = :brukernavn
-      AND b.gruppetimeID = :trening_id
-      AND b.avmeldt_tidspunkt IS NULL
+    SELECT :trening_id, id
+    From Bruker
+    WHERE epost = :brukernavn
     """
 
-    cursor.execute(query, data)
-    con.commit()
-
-    if cursor.rowcount == 0:
-        print("Fant ingen aktiv booking som kan registreres.")
-    else:
-        print("Oppmøte registrert.")
-
-    con.close()
+    try: 
+        cursor.execute(query, data)
+        con.commit()
+        if cursor.rowcount == 0:
+            print("Brukeren finnes ikke.")
+        else:
+            print("Oppmøte registrert.")
+    except sqlite3.IntegrityError:
+        print("Booking er ikke gyldig, sjekk at brukeren er påmeldt med en booking")
+    finally:
+        con.close()
 
 
 if __name__ == "__main__":
