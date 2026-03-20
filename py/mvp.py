@@ -7,7 +7,7 @@ def hent_mvp(år: int, month: str, dbnavn="sql/test.db"):
 
     con = sqlite3.connect(dbnavn)
     cursor = con.cursor()
-    cursor.execute(QUERY, {"month": f"{år}-0{month}"})
+    cursor.execute(QUERY, {"month": f"{år}-{month}"})
     rader = cursor.fetchall()
     kolonner = [beskrivelse[0] for beskrivelse in cursor.description or []]
     con.close()
