@@ -8,7 +8,7 @@ Vi endret også på to tabeller:
 - Endret foreign key på `Deltatt` slik at det refererer til en `Booking`, altså brukeren må være påmeldt for å kunne delta
 
 ## Antakelser og forklaring av oppgaver
-- Brukstilfelle 6: Dette implementeres utelukkende med triggers, så ingen python nødvendig. Hvis en bruker møter opp for sent, eller melder seg av for sent så får de automatisk prikk. Vi har et view som viser de som akkurat nå er utestengt. Det sjekkes at brukeren ikke er i utestengt når den prøver å melde seg på noe
+- Brukstilfelle 6: Dette implementeres utelukkende med triggers, så ingen python nødvendig. Hvis en bruker møter opp for sent, eller melder seg av for sent så får de automatisk prikk. Vi har et view som viser de som akkurat nå er utestengt. Det sjekkes at brukeren ikke er i utestengt når den prøver å melde seg på noe, sjekkes opp mot påmeldt tidspunkt. 
 - Brukstilfelle 8: Vi antar at når to stykk går på samme gruppetime, så trener dem sammen. Vi tenker at for høye tall så vil dette være relevant, lite sannsynelighet for å tilfeldigvis havne på mange treninger sammen uten å koordinere
 
 ## Hvordan kjøre

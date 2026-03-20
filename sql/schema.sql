@@ -192,6 +192,7 @@ create view Utestengt as
 ;
 
 -- nytt for DB2
+
 create view GruppeTimeSlutt as
 select g.id, g.aktivitet_navn, g.tidspunkt as starttidspunkt, 
 	datetime(g.tidspunkt, '+' || a.lengde_min || ' minutes') as sluttidspunkt, 

@@ -125,13 +125,46 @@ begin
 select RAISE(ABORT, 'du kan ikke endre brukerID eller gruppetimeID i booking');
 end;
 
-create trigger bruker_utestengt
+create trigger bruker_utestengt_insert
 before insert on Booking
 for each row
 when (
-	new.brukerID in (
-		select brukerID
-		from Utestengt
+	exists (
+		select 1
+		from Prikk
+		where datetime(tidspunkt, '+30 days') > new.påmeldt_tidspunkt
+		and brukerID == new.brukerID
+		group by brukerID
+		having count(*) >= 3 
+	)
+	or exists (
+		select 1
+		from Utestengelse
+		where slutt > new.påmeldt_tidspunkt
+		and brukerID == new.brukerID
+	)
+)
+begin
+select RAISE(ABORT, 'brukeren er utestengt');
+end;
+
+create trigger bruker_utestengt_update
+before update of påmeldt_tidspunkt on Booking
+for each row
+when (
+	exists (
+		select 1
+		from Prikk
+		where datetime(tidspunkt, '+30 days') > new.påmeldt_tidspunkt
+		and brukerID == new.brukerID
+		group by brukerID
+		having count(*) >= 3 
+	)
+	or exists (
+		select 1
+		from Utestengelse
+		where slutt > new.påmeldt_tidspunkt
+		and brukerID == new.brukerID
 	)
 )
 begin
