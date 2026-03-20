@@ -34,9 +34,23 @@ def meld_på(data):
     try:
         cursor.execute(query, data)
         con.commit()
-        print("meldt på")
     except sqlite3.IntegrityError as e:
         print(e)
+
+    query = """
+    SELECT 1
+    FROM GruppetimeDeltakere
+    WHERE gruppetimeID = :gruppetimeID
+    AND brukerID = :brukerID
+    """
+
+    cursor.execute(query, data)
+
+    if cursor.fetchone():
+        print("bruker meldt på og ikke på ventelisten")
+    else:
+        print("bruker meldt på ventelisten")
+
 
 data = {
     "aktivitet": input("Oppgi aktivitet: ").strip(),
