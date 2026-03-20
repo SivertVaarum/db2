@@ -1,3 +1,56 @@
+-- Senter
+create trigger bemannet_endret
+before update on Senter
+for each row
+when (
+	exists (
+		select 1
+		from Bemannet b
+		where b.senter_navn = new.navn
+		and (
+			b.starttidspunkt < new.åpningstid
+			or b.sluttidspunkt > new.stengetid
+		)
+	)
+)
+begin
+select RAISE(ABORT, 'bryter med bemannede tider');
+end;
+
+
+-- Bemannet
+create trigger bemannet_innenfor_åpning_insert
+before insert on Bemannet
+for each row
+when (
+	not exists (
+		select 1
+		from Senter s
+		where s.navn = new.senter_navn
+		and new.starttidspunkt >= s.åpningstid
+		and new.sluttidspunkt <= s.stengetid
+	)
+)
+begin
+select RAISE(ABORT, 'kan bare være bemannet innen åpningstid');
+end;
+
+create trigger bemannet_innenfor_åpning_update
+before update on Bemannet
+for each row
+when (
+	not exists (
+		select 1
+		from Senter s
+		where s.navn = new.senter_navn
+		and new.starttidspunkt >= s.åpningstid
+		and new.sluttidspunkt <= s.stengetid
+	)
+)
+begin
+select RAISE(ABORT, 'kan bare være bemannet innen åpningstid');
+end;
+
 -- Gruppetime
 
 create trigger gruppetime_kollisjon_update

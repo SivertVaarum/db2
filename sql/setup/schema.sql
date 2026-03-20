@@ -78,6 +78,7 @@ create table Prikk (
 	foreign key (brukerID) references Bruker(id)
 );
 
+-- dette er manuell utestengelse
 create table Utestengelse (
 	brukerID int,
 	gitt timestamp default CURRENT_TIMESTAMP,
