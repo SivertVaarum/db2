@@ -20,10 +20,16 @@ def sjekk_om_påmeldt(data):
 
 def meld_på(data):
 
-    query = """
-    INSERT INTO Booking (gruppetimeID, brukerID)
-    VALUES (:gruppetimeID, :brukerID)
-    """
+    if not data["påmeldt"]:
+        query = """
+        INSERT INTO Booking (gruppetimeID, brukerID)
+        VALUES (:gruppetimeID, :brukerID)
+        """
+    else:
+        query = """
+        INSERT INTO Booking (gruppetimeID, brukerID, påmeldt_tidspunkt)
+        VALUES (:gruppetimeID, :brukerID, :påmeldt)
+        """
 
     try:
         cursor.execute(query, data)
@@ -33,9 +39,10 @@ def meld_på(data):
         print(e)
 
 data = {
-    "aktivitet": input("Oppgi aktivitet: "),
-    "epost":  input("Oppgi epost: "),
-    "tidspunkt":  input("Oppgi tid: "),
+    "aktivitet": input("Oppgi aktivitet: ").strip(),
+    "epost":  input("Oppgi epost: ").strip(),
+    "tidspunkt":  input("Oppgi tid: ").strip(),
+    "påmeldt": input("Oppgi påmeldt tidspunkt (default nå): ").strip(),
     "STED": input("Oppgi senter (default øya): ").strip() or "Øya treningssenter",
     "SAL": input("Oppgi sal (default sykkelsal): ").strip() or "Sykkelsal",
 }
