@@ -216,11 +216,11 @@ WITH månedsteller AS (
     SELECT b.id,
            b.fornavn || ' ' || b.etternavn AS navn,
            COUNT(*) AS antall,
-		   STRFTIME('%Y-%m', d.oppmøtt_tidspunkt) as mont
+		   STRFTIME('%Y-%m', d.oppmøtt_tidspunkt) as årmåned
     FROM Bruker b
     JOIN Deltatt d ON b.id = d.brukerID
-    GROUP BY b.id, b.fornavn, b.etternavn, mont
+    GROUP BY b.id, b.fornavn, b.etternavn, årmåned
 )
-SELECT mt.navn, mt.antall, mt.mont
+SELECT mt.navn, mt.antall, mt.årmåned
 FROM månedsteller as mt
-WHERE mt.antall = (SELECT MAX(m.antall) FROM månedsteller as m WHERE mt.mont == m.mont)
+WHERE mt.antall = (SELECT MAX(m.antall) FROM månedsteller as m WHERE mt.årmåned == m.årmåned)

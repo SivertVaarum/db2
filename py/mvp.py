@@ -4,11 +4,10 @@ with open("sql/mvp.sql", "r", encoding="utf-8") as fil:
     QUERY = fil.read()
 
 def hent_mvp(år: int, month: int, dbnavn="sql/test.db"):
-    måned_start = f'{år:04d}-{month:02d}-01'
 
     con = sqlite3.connect(dbnavn)
     cursor = con.cursor()
-    cursor.execute(QUERY, {"month": måned_start})
+    cursor.execute(QUERY, {"år":år, "month": month})
     rader = cursor.fetchall()
     kolonner = [beskrivelse[0] for beskrivelse in cursor.description or []]
     con.close()
