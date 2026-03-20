@@ -1,6 +1,6 @@
 -- Senter
 create trigger bemannet_endret
-before update on Senter
+before update of åpningstid, stengetid on Senter
 for each row
 when (
 	exists (
@@ -49,6 +49,32 @@ when (
 )
 begin
 select RAISE(ABORT, 'kan bare være bemannet innen åpningstid');
+end;
+
+-- Aktivitet
+create trigger aktivitet_kollisjon_update
+before update of lengde_min on Aktivitet
+for each row
+when (
+	old.lengde_min < new.lengde_min
+	and
+	exists (
+		select 1
+		from SalOpptatt s
+		join Gruppetime g on g.aktivitet_navn = new.navn
+		where g.tidspunkt < s.sluttidspunkt
+		and s.starttidspunkt < datetime(g.tidspunkt, '+' || new.lengde_min || ' minutes')
+		and s.senter_navn = g.senter_navn
+		and s.sal_navn = g.sal_navn
+		and not ( -- samme rad
+			s.starttidspunkt = g.tidspunkt 
+			and s.sal_navn = g.sal_navn
+			and s.senter_navn = g.senter_navn
+		)
+	)	
+)
+begin
+select RAISE(ABORT, 'gruppetimer vil kollidere da');
 end;
 
 -- Gruppetime
