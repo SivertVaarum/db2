@@ -70,11 +70,13 @@ create table Besøk (
 	foreign key (senter_navn) references Senter(navn)
 );
 
+-- endret for db2, lagt til id slik at prikker ikke kolliderer lenger
 create table Prikk (
-	brukerID int,
-	tidspunkt timestamp default CURRENT_TIMESTAMP,
+	id int,
+	brukerID int not null,
+	tidspunkt timestamp default CURRENT_TIMESTAMP not null,
 	grunn varchar(255),
-	primary key (brukerID, tidspunkt),
+	primary key (id),
 	foreign key (brukerID) references Bruker(id)
 );
 
