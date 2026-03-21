@@ -1,69 +1,44 @@
 import sqlite3
+from py import helper
 
-con = sqlite3.connect("../sql/databasefil.db")
-con.execute("PRAGMA foreign_keys = ON") # foreign keys må være på
-cursor = con.cursor()
+(con, cursor) = helper.openConnection()
 
 def sjekk_om_avmeldt(data):
-
-    query = """
-    SELECT avmeldt_tidspunkt 
-    FROM Booking 
-    WHERE brukerID = :brukerID AND gruppetimeID = :gruppetimeID
-    """
-
+    query = helper.readQuery("er-avmeldt.sql")
     cursor.execute(query, data)
-
     return cursor.fetchone()
 
 def meld_på(data):
 
     rad = sjekk_om_avmeldt(data)
+    booking_eksisterer = rad is not None
+    avmeldt = booking_eksisterer and rad[0] is not None
+    påmeldt_arg = data["påmeldt"] is not None
 
-    if rad is None:
-        # ingen booking eksisterer
-        if data["påmeldt"] is None:
-            query = """
-            INSERT INTO Booking (gruppetimeID, brukerID)
-            VALUES (:gruppetimeID, :brukerID)
-            """
-        else:
-            query = """
-            INSERT INTO Booking (gruppetimeID, brukerID, påmeldt_tidspunkt)
-            VALUES (:gruppetimeID, :brukerID, :påmeldt)
-            """
-
-    elif rad[0] is not None:
-        param = "CURRENT_TIMESTAMP" if data["påmeldt"] is None else ":påmeldt"
-        # booking eksisterer men avmeldt
-        query = f"""
-        UPDATE Booking
-        SET avmeldt_tidspunkt = NULL, påmeldt_tidspunkt = {param}
-        WHERE brukerID = :brukerID
-        AND gruppetimeID = :gruppetimeID
-        """
-    else:
+    if booking_eksisterer and not avmeldt:
         print("Bruker er allerede meldt på")
         return
+
+    file = "update" if booking_eksisterer else "insert"
+    file += "-booking-"
+    file += "pameldt" if påmeldt_arg else "default"
+    file += ".sql"
+
+    query = helper.readQuery(file)
 
     try:
         cursor.execute(query, data)
         con.commit()
     except sqlite3.IntegrityError as e:
-        print(e)
         con.rollback()
+        print(e)
         return
 
     print_resultat(data)
 
 
 def print_resultat(data):
-    query = """
-    SELECT 1
-    FROM GruppetimeDeltakere
-    WHERE gruppetimeID = :gruppetimeID
-    AND brukerID = :brukerID
-    """
+    query = helper.readQuery("er-pameldt.sql")
 
     cursor.execute(query, data)
 
@@ -83,20 +58,13 @@ data = {
 }
 
 #finnes aktiviteten?
-query = """
-SELECT id 
-FROM Gruppetime 
-WHERE aktivitet_navn = :aktivitet 
-AND tidspunkt = :tidspunkt 
-AND senter_navn = :STED 
-AND sal_navn = :SAL
-"""
+query = helper.readQuery("get-gruppetime.sql")
 
 cursor.execute(query, data)
 gruppetimeID = cursor.fetchone()
 
 # finnes brukeren?
-query = "SELECT id from Bruker WHERE Bruker.epost = :epost"
+query = helper.readQuery("get-bruker-epost.sql")
 cursor.execute(query, data)
 brukerID = cursor.fetchone()
 

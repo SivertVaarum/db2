@@ -1,27 +1,16 @@
 import sqlite3
+from py import helper
 
-dbnavn = "../sql/databasefil.db"
 
 def registrer_oppmote(data):
-    con = sqlite3.connect(dbnavn)
-    con.execute("PRAGMA foreign_keys = ON") # foreign keys må være på
-    cursor = con.cursor()
+    oppmøtt_arg = data["oppmøtt_tidspunkt"] is not None
 
-    if data["oppmøtt_tidspunkt"]:
-        query = """
-        INSERT INTO Deltatt (gruppetimeID, brukerID, oppmøtt_tidspunkt)
-        SELECT :trening_id, id, :oppmøtt_tidspunkt
-        From Bruker
-        WHERE epost = :brukernavn
-        """
-    else:
-        query = """
-        INSERT INTO Deltatt (gruppetimeID, brukerID)
-        SELECT :trening_id, id
-        From Bruker
-        WHERE epost = :brukernavn
-        """
+    file = "registrer-deltakelse-"
+    file += "oppmott" if oppmøtt_arg else "default"
+    file += ".sql"
+    query = helper.readQuery(file)
 
+    (con, cursor) = helper.openConnection()
     try: 
         cursor.execute(query, data)
         con.commit()

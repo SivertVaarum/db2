@@ -1,6 +1,9 @@
 # db2
 Prosjektoppgave til tdt4145
 
+## Bruk av KI
+Vi har ikke brukt KI, siden vi vil ha stort læringsutbytte
+
 ## Endring i schema
 Vi endret på et par ting i schemaet, vi la til view helt nederst i schema.sql
 Vi endret også på to tabeller:

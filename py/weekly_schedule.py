@@ -1,5 +1,5 @@
-import sqlite3
 from datetime import date
+from py import helper
 
 UKEDAGER = {
     "mandag": 1,
@@ -11,25 +11,21 @@ UKEDAGER = {
     "søndag": 7,
 }
 
-with open("../sql/weekly_schedule.sql", "r", encoding="utf-8") as fil:
-    QUERY = fil.read()
-
-
-def hent_ukeplan(år: int, uke: int, startdag: str, dbnavn: str = "../sql/databasefil.db"):
+def hent_ukeplan(år: int, uke: int, startdag: str):
     startdato = date.fromisocalendar(år, uke, UKEDAGER[startdag.lower()]).isoformat()
+    QUERY = helper.readQuery("weekly_schedule.sql")
+    (con, cursor) = helper.openConnection()
 
-
-    con = sqlite3.connect(dbnavn)
-    cursor = con.cursor()
     cursor.execute(QUERY, {"startdato": startdato})
     rader = cursor.fetchall()
     kolonner = [beskrivelse[0] for beskrivelse in cursor.description or []]
     con.close()
+
     return kolonner, rader
 
 
 if __name__ == "__main__":
-    år = int(input("Oppgi år: ").strip())
+    år = int(input("Oppgi år (f.eks. 2026): ").strip())
     startdag = input("Oppgi startdag (f.eks. mandag): ").strip()
     uke = int(input("Oppgi uke-nummer (f.eks. 12): ").strip())
 

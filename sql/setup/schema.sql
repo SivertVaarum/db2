@@ -251,6 +251,12 @@ where not exists (
 	and d.brukerID = g.brukerID
 );
 
+-- Alle offentlige gruppetimer
+create view OffentligeGruppetimer as
+select *
+from Gruppetime
+where tidspunkt <= datetime(CURRENT_TIMESTAMP, '+48 hours')
+
 create view MVP as
 WITH månedsteller AS (
     SELECT b.id,
