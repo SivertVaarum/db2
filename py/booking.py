@@ -1,5 +1,5 @@
 import sqlite3
-from py import helper
+import helper
 
 (con, cursor) = helper.openConnection()
 
@@ -49,12 +49,12 @@ def print_resultat(data):
 
 
 data = {
-    "aktivitet": input("Oppgi aktivitet: ").strip(),
     "epost":  input("Oppgi epost: ").strip(),
+    "aktivitet": input("Oppgi aktivitet: ").strip(),
     "tidspunkt":  input("Oppgi tid: ").strip(),
-    "påmeldt": input("Oppgi påmeldt tidspunkt (default nå): ").strip() or None,
     "STED": input("Oppgi senter (default øya): ").strip() or "Øya treningssenter",
     "SAL": input("Oppgi sal (default sykkelsal): ").strip() or "Sykkelsal",
+    "påmeldt": input("Oppgi påmeldt tidspunkt (default nå): ").strip() or None,
 }
 
 #finnes aktiviteten?

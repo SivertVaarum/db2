@@ -1,5 +1,5 @@
 from datetime import date
-from py import helper
+import helper
 
 UKEDAGER = {
     "mandag": 1,

@@ -215,7 +215,7 @@ create view GruppetimeDeltakere as
 select b.gruppetimeID, b.brukerID
 from Booking b
 join Gruppetime g on b.gruppetimeID = g.id
-join Sal s on (g.senter_navn = s.senter_navn and g.sal_navn = s.sal_navn) 
+join Sal s on (g.senter_navn = s.senter_navn and g.sal_navn = s.navn) 
 where b.avmeldt_tidspunkt is null
 and s.kapasitet > (
 	select count(*) -- antall som har meldt seg på før
@@ -255,7 +255,7 @@ where not exists (
 create view OffentligeGruppetimer as
 select *
 from Gruppetime
-where tidspunkt <= datetime(CURRENT_TIMESTAMP, '+48 hours')
+where tidspunkt <= datetime(CURRENT_TIMESTAMP, '+48 hours');
 
 create view MVP as
 WITH månedsteller AS (

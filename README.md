@@ -28,10 +28,74 @@ python booking.py # slik kjører du python filene, disse tar input fra terminale
 ### Hvordan kjøre brukstilfellene
 
 1. Gjøres i insert_data.sql, blir automatisk kjørt av setup.sql
+```sh
+db2/sql❯ sqlite3 databasefil.db < setup.sql
+```
 2. Kjør `booking.py` i python mappen
-3. Kjør `registration.py` i python mappen
+
+```sh
+db2/py ❯ python booking.py
+Oppgi epost: johnny@stud.ntnu.no
+Oppgi aktivitet: Spin 8x3
+Oppgi tid: 2026-03-18 19:30:00
+Oppgi senter (default øya):
+Oppgi sal (default sykkelsal):
+Oppgi påmeldt tidspunkt (default nå): 2026-03-18 00:00:00
+bruker meldt på og ikke på ventelisten
+```
+ 
+3. Kjør `registration.py` i python mappen, pass på at brukeren har en booking
+```sh
+db2/py❯ python registration.py
+Oppgi brukernavn (epost): johnny@stud.ntnu.no
+Oppgi trening (gruppetimeID): 13
+Oppgi oppmøtt tidspunkt (default nå):
+Oppmøte registrert.
+```
+
 4. Kjør `weeklyschedule.py` i python mappen
+```sh
+db2/py❯ python weekly_schedule.py
+Oppgi år (f.eks. 2026): 2026
+Oppgi startdag (f.eks. mandag): tirsdag
+Oppgi uke-nummer (f.eks. 12): 12
+aktivitet_navn | tidspunkt | senter_navn
+Spin 8x3 | 2026-03-17 07:00:00 | Øya treningssenter
+Spin60 | 2026-03-17 18:30:00 | Øya treningssenter
+Spin 4x4 | 2026-03-17 19:45:00 | Øya treningssenter
+Spin60 | 2026-03-18 16:15:00 | Øya treningssenter
+Spin45 | 2026-03-18 16:30:00 | Dragvoll
+Spin 4x4 | 2026-03-18 17:30:00 | Øya treningssenter
+Spin45 | 2026-03-18 18:30:00 | Øya treningssenter
+Spin 8x3 | 2026-03-18 19:30:00 | Øya treningssenter
+```
+
 5. Kjør `history-johnnny.sql` i sql mappen
+```sh
+db2/sql❯ sqlite3 databasefil.db < history-johnny.sql
+2026-03-16 07:00:00|Øya treningssenter|Spin 4x4
+2026-03-16 16:30:00|Dragvoll|Spin 4x4
+2026-03-18 19:30:00|Øya treningssenter|Spin 8x3
+```
+
 6. Dette skjer automatisk med triggers, se `triggers.sql`
+
 7. Kjør `mvp.py` i python mappen
+```sh
+db2/py❯ python mvp.py
+Oppgi år: 2026
+Oppgi måned (01-12): 03
+MVP for 2026-03:
+- Siri Moe Lund: 3 gruppetimer
+```
+
 8. Kjør `train_together.sql` i sql mappen
+```sh
+db2/sql❯ sqlite3 databasefil.db < train-together.sql
+eirin.hansen@sit.no|johnny@stud.ntnu.no|1
+eirin.hansen@sit.no|jorunn.berg.bakke@sit.no|1
+eirin.hansen@sit.no|siri.moe.lund@sit.no|2
+johnny@stud.ntnu.no|jorunn.berg.bakke@sit.no|1
+johnny@stud.ntnu.no|siri.moe.lund@sit.no|1
+jorunn.berg.bakke@sit.no|siri.moe.lund@sit.no|2
+```

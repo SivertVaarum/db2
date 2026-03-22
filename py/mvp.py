@@ -1,4 +1,4 @@
-from py import helper
+import helper
 
 
 def hent_mvp(år: int, month: str):

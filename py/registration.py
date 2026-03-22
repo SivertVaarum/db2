@@ -1,5 +1,5 @@
 import sqlite3
-from py import helper
+import helper
 
 
 def registrer_oppmote(data):
