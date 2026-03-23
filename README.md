@@ -1,8 +1,17 @@
 # db2
 Prosjektoppgave til tdt4145
 
+## Gruppeinfo
+Gruppenr: 107
+
+### Gruppemedlemmer
+- Henrik Nordvik
+- Sivert Lindblad Vårum
+- Jonas Kristiansen
+
+
 ## Bruk av KI
-Vi har ikke brukt KI, siden vi vil ha stort læringsutbytte
+Vi har ikke brukt KI, siden vi syntes det gir større læringsutbytte
 
 ## Endring i schema
 Vi endret på et par ting i schemaet, vi la til view helt nederst i schema.sql
@@ -11,8 +20,8 @@ Vi endret også på to tabeller:
 - Endret foreign key på `Deltatt` slik at det refererer til en `Booking`, altså brukeren må være påmeldt for å kunne delta
 
 ## Antakelser og forklaring av oppgaver
-- Brukstilfelle 6: Dette implementeres utelukkende med triggers, så ingen python nødvendig. Hvis en bruker møter opp for sent, eller melder seg av for sent så får de automatisk prikk. Vi har et view som viser de som akkurat nå er utestengt. Det sjekkes at brukeren ikke er i utestengt når den prøver å melde seg på noe, sjekkes opp mot påmeldt tidspunkt. 
-- Brukstilfelle 8: Vi antar at når to stykk går på samme gruppetime, så trener dem sammen. Vi tenker at for høye tall så vil dette være relevant, lite sannsynelighet for å tilfeldigvis havne på mange treninger sammen uten å koordinere
+- Brukstilfelle 6: Dette implementeres utelukkende med triggers, så ingen python nødvendig. Hvis en bruker møter opp for sent, eller melder seg av for sent så får de automatisk prikk. Vi har et view som viser de som akkurat nå er utestengt. Det sjekkes at brukeren ikke er i utestengt når den prøver å melde seg på noe, sjekkes opp mot påmeldt tidspunkt. Har også et script i sql mappen kalt `prikk-ikke-møtt.sql` som gir prikk til alle som ikke har møtt enda på en gitt gruppetime
+- Brukstilfelle 8: Vi antar at når to stykk går på samme gruppetime, så trener dem sammen. Vi tenker at for høye tall så vil dette være relevant, altså lite sannsynlighet for å tilfeldigvis havne på mange treninger sammen uten å koordinere
 
 ## Hvordan kjøre
 Hvis du skal legge til noe data må du huske å kjøre `PRAGMA foreign_keys = ON` først for å slå på foreign keys
